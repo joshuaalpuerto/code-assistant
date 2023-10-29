@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "code-assistant"
+version = "0.1.0"
+description = ""
+authors = ["Joshua C Alpuerto <joshuacalpuerto@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+esprima = "^4.0.1"
+gitpython = "^3.1.40"
+chromadb = "^0.4.15"
+
+[tool.poetry.group.dev.dependencies]
+langchain = "^0.0.325"
+esprima = "^4.0.1"
+sentence-transformers = "^2.2.2"
+faiss-cpu = "^1.7.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
