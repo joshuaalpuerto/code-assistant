@@ -10,7 +10,7 @@ from langchain.vectorstores import FAISS
 import store
 
 from constants import (
-    PACKAGES_DIRECTORY_PATH,
+    REPO_PATH,
     EMBEDDING_MODEL_NAME,
     PERSIST_DIRECTORY,
 )
@@ -63,7 +63,7 @@ def main():
 
     # Add arguments
     parser.add_argument(
-        "--package",
+        "--target_folder",
         help="Path to the package folder, remember when searching you need to pass this also.",
         required=True,
     )
@@ -71,9 +71,9 @@ def main():
     # Parse the command-line arguments
     args = parser.parse_args()
 
-    package = f"/{args.package}"
-    CODE_BASE_PATH = PACKAGES_DIRECTORY_PATH + package
-    DB_FULL_DIRECTORY = PERSIST_DIRECTORY + package
+    target_folder = f"/{args.target_folder}"
+    CODE_BASE_PATH = REPO_PATH + target_folder
+    DB_FULL_DIRECTORY = PERSIST_DIRECTORY + target_folder
 
     documents = load_codebase(CODE_BASE_PATH)
 
@@ -88,10 +88,12 @@ def main():
         encode_kwargs={"normalize_embeddings": True},
     )
 
-    store.create_codebase_embeddings(documents, embedding_function)
+    # Store the embeddings  in
+    store.create_codebase_embeddings(
+        documents, embedding=embedding_function, persist_directory=DB_FULL_DIRECTORY
+    )
 
-    # db = FAISS.from_documents(texts, embeddings)
-    # db.save_local(DB_FULL_DIRECTORY)
+    return True
 
 
 if __name__ == "__main__":

@@ -3,21 +3,9 @@ import json
 import git
 
 from constants import (
+    REPO_PATH,
     PERSIST_DIRECTORY,
 )
-
-
-def get_main_repo_folder():
-    current_dir = os.path.abspath(os.path.dirname(__file__))
-
-    # Iterate upward through the directory hierarchy until we find a .git folder
-    while current_dir != "/":
-        if os.path.exists(os.path.join(current_dir, ".git")):
-            return current_dir
-        current_dir = os.path.dirname(current_dir)
-
-    # If no .git folder is found, return None
-    return None
 
 
 def write_json_store(data):
@@ -44,9 +32,8 @@ def load_json_store():
 
 
 def get_repo_latest_commit_by_branch(branch="master"):
-    main_repo_folder = get_main_repo_folder()
     # Open the Git repository
-    repo = git.Repo(main_repo_folder)
+    repo = git.Repo(REPO_PATH)
 
     # Get the latest commit on the "master" branch
     return repo.commit(branch)

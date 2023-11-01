@@ -1,5 +1,6 @@
 import logging
 import argparse
+import store
 
 from langchain.embeddings import HuggingFaceBgeEmbeddings
 from langchain.vectorstores import FAISS
@@ -11,17 +12,17 @@ from constants import (
 
 
 def get_relevant_documents(query, args):
-    package = f"/{args.package}"
+    target_folder = f"/{args.target_folder}"
 
-    DB_FULL_DIRECTORY = PERSIST_DIRECTORY + package
+    DB_FULL_DIRECTORY = PERSIST_DIRECTORY + target_folder
 
-    embeddings = HuggingFaceBgeEmbeddings(
+    embedding = HuggingFaceBgeEmbeddings(
         model_name=EMBEDDING_MODEL_NAME,
         model_kwargs={"device": "cpu"},
         encode_kwargs={"normalize_embeddings": True},  # So we can use cos_sim
     )
 
-    db = FAISS.load_local(DB_FULL_DIRECTORY, embeddings)
+    db = store.get_db(persist_directory=DB_FULL_DIRECTORY, embedding=embedding)
     retriever = db.as_retriever(
         # It will find similar documents, then iteratively remove almost duplicate results.
         # This return diverse result
@@ -40,7 +41,7 @@ def main():
 
     # Add arguments
     parser.add_argument(
-        "--package", help="Package you apply when ingesting.", required=True
+        "--target_folder", help="Package you apply when ingesting.", required=True
     )
     parser.add_argument("--query", help="Question.", required=True)
 
@@ -59,7 +60,7 @@ def main():
     )
     for document in documents:
         print("\n> " + "{doc_source}".format(doc_source=document.metadata["source"]))
-        print(document.page_content[:50])
+        print(document.metadata)
         print("-" * 20)
     print(
         "----------------------------------SOURCE DOCUMENTS---------------------------"
