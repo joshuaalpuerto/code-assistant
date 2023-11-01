@@ -30,10 +30,15 @@ def get_relevant_documents(query, args):
         search_kwargs={"k": 10},
     )
 
+    # We shouldn't rely with score because if the users query is short it will have still high relevance
     return retriever.get_relevant_documents(query)
 
 
-def main():
+if __name__ == "__main__":
+    logging.basicConfig(
+        format="%(asctime)s - %(levelname)s - %(filename)s:%(lineno)s - %(message)s",
+        level=logging.INFO,
+    )
     # Create an ArgumentParser object
     parser = argparse.ArgumentParser(
         description="A simple Python script that will search codebase base on your query."
@@ -65,11 +70,3 @@ def main():
     print(
         "----------------------------------SOURCE DOCUMENTS---------------------------"
     )
-
-
-if __name__ == "__main__":
-    logging.basicConfig(
-        format="%(asctime)s - %(levelname)s - %(filename)s:%(lineno)s - %(message)s",
-        level=logging.INFO,
-    )
-    main()
