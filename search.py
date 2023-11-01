@@ -1,6 +1,7 @@
 import logging
 import argparse
 import store
+import model
 
 from langchain.embeddings import HuggingFaceBgeEmbeddings
 from langchain.vectorstores import FAISS
@@ -9,6 +10,13 @@ from constants import (
     EMBEDDING_MODEL_NAME,
     PERSIST_DIRECTORY,
 )
+
+
+# Naive top_k retriever (there a chance it gets incorrect context)
+def get_documents_as_context(documnets):
+    inputs = [f"- {doc.page_content}" for doc in documnets]
+    context = "\n".join(inputs)
+    return context
 
 
 def get_relevant_documents(query, args):
@@ -54,19 +62,26 @@ if __name__ == "__main__":
     args = parser.parse_args()
     query = args.query
 
-    documents = get_relevant_documents(query, args)
+    llm = model.load()
+
+    context = get_relevant_documents(query, args)
+    # format the string
+    context = get_documents_as_context(context)
+    result = model.llm_chain_extractor(llm, query, context)
 
     print("\n\n> Question:")
     print(query)
+    print("-" * 20)
+    print(result)
 
-    # Print the relevant sources used for the answer for FAISS
-    print(
-        "----------------------------------SOURCE DOCUMENTS---------------------------"
-    )
-    for document in documents:
-        print("\n> " + "{doc_source}".format(doc_source=document.metadata["source"]))
-        print(document.metadata)
-        print("-" * 20)
-    print(
-        "----------------------------------SOURCE DOCUMENTS---------------------------"
-    )
+    # # Print the relevant sources used for the answer for FAISS
+    # print(
+    #     "----------------------------------SOURCE DOCUMENTS---------------------------"
+    # )
+    # for document in documents:
+    #     print("\n> " + "{doc_source}".format(doc_source=document.metadata["source"]))
+    #     print(document.metadata)
+    #     print("-" * 20)
+    # print(
+    #     "----------------------------------SOURCE DOCUMENTS---------------------------"
+    # )

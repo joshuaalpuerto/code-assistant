@@ -10,6 +10,7 @@ python = "^3.10"
 esprima = "^4.0.1"
 gitpython = "^3.1.40"
 chromadb = "^0.4.15"
+ctransformers = "^0.2.27"
 
 [tool.poetry.group.dev.dependencies]
 langchain = "^0.0.325"
